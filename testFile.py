@@ -1,3 +1,5 @@
+
+
 import asyncio
 
 from viam.robot.client import RobotClient
@@ -9,50 +11,6 @@ from viam.components.camera import Camera
 from viam.components.encoder import Encoder
 from viam.components.movement_sensor import MovementSensor
 from viam.services.vision import VisionClient
-
-async def connect():
-    opts = RobotClient.Options.with_api_key(
-            # Replace "<API-KEY>" (including brackets) with your machine's api key 
-        api_key='<API-KEY>',
-        # Replace "<API-KEY-ID>" (including brackets) with your machine's api key id
-        api_key_id='<API-KEY-ID>'
-    )
-    return await RobotClient.at_address('rover6-main.9883cqmu1w.viam.cloud', opts)
-
-def findRange (detections):
-    adequateConfidence = []
-    for detection in detections:
-        if detection["confidence"]>0.5:
-            adequateConfidence.append(detection)
-    bestDetection = adequateConfidence[0]
-    bestArea = (bestDetection.x_max-bestDetection.x_min)*(bestDetection.y_max-bestDetection.y_min)
-    for d in adequateConfidence:
-        area = (d.x_max-d.x_min)*(d.y_max - d.y_min)
-        if area > bestArea:
-            bestArea = area
-            bestDetection =d
-    return d
-
-def leftOrRight(detection, midpoint):
-    if detection:
-        detectionMP = (detection.x_min+detection.x_max)/2
-        difference = midpoint-detectionMP
-        return difference
-    else:
-        print("no detection available")
-        return None
-    
-def detectDistance(detection, dist, vel):
-    #declare a range for area
-    xspan = detection.x_max-detection.x_min
-    xspanMin=0.5 *xspan
-    xspanMax= xspan
-    #will the ranges modify (I haven't coded in python in so long Im so used to C)
-    #detect a 2d estimate for the size change of an object
-    #move it until it
-    if xspan<xspanMin:
-        while xspan<xspanMax:
-            base.move_straight(dist,vel)
 
 async def connect():
     opts = RobotClient.Options.with_api_key(
