@@ -1,0 +1,61 @@
+---
+- - :permit
+  - MIT
+  - :who:
+    :why:
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :permit
+  - " MIT"
+  - :who:
+    :why: 'TODO: whitespace detection issue - submit patch to license finder'
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :permit
+  - BSD-3-Clause
+  - :who:
+    :why:
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :permit
+  - Apache-2.0
+  - :who:
+    :why:
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :permit
+  - " Apache-2.0"
+  - :who:
+    :why: 'TODO: whitespace detection issue - submit patch to license finder'
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :permit
+  - BSD-2-Clause
+  - :who:
+    :why:
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :permit
+  - ISC
+  - :who:
+    :why:
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :permit
+  - MPL-2.0
+  - :who:
+    :why:
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :approve
+  - viam-rust-utils
+  - :who:
+    :why: this is our library
+    :versions: []
+    :when: 2022-09-08 15:39:55.751943000 Z
+- - :approve
+  - viam-dialdbg
+  - :who:
+    :why: this is our library
+    :versions: []
+    :when: 2023-07-12 16:08:47.166282000 Z

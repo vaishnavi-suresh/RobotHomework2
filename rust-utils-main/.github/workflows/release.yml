@@ -1,0 +1,219 @@
+name: Build + draft release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The type of version bump. Use "nobump" for no change.'
+        type: choice
+        required: true
+        default: nobump
+        options:
+        - major
+        - minor
+        - patch
+        - nobump
+jobs:
+  prepare:
+    if: github.repository_owner == 'viamrobotics'
+    runs-on: buildjet-8vcpu-ubuntu-2204-arm
+    outputs:
+      version: ${{ steps.which_version.outputs.version }}
+      sha: ${{ steps.commit.outputs.commit_long_sha }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REPO_READ_TOKEN }}
+
+      - name: Setup rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Bump Version
+        shell: bash
+        if: inputs.version != 'nobump'
+        run: |
+          cargo install cargo-release
+          cargo release version ${{ inputs.version }} --execute --no-confirm
+
+      - name: Which Version
+        id: which_version
+        shell: bash
+        run: |
+          cargo update
+          echo "version=$(cargo pkgid | sed 's/.*@//g')" >> $GITHUB_OUTPUT
+
+      - name: Check if release exists
+        uses: cardinalby/git-get-release-action@1.2.4
+        id: release_exists
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseName: v${{ steps.which_version.outputs.version }}
+          doNotFailIfNotFound: 'true'
+
+      - name: Cancelling - release already exists
+        uses: andymckay/cancel-action@0.2
+        if: steps.release_exists.outputs.id != ''
+
+      - name: Commit + Push
+        id: commit
+        uses: EndBug/add-and-commit@v9.0.0
+        with:
+          default_author: github_actions
+          message: Bumping version to v${{ steps.which_version.outputs.version }} [skip ci]
+
+  build_macos:
+    if: github.repository_owner == 'viamrobotics'
+    needs: [prepare]
+    runs-on: [self-hosted, ARM64, macOS]
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            platform: macosx_arm64
+          - target: x86_64-apple-darwin
+            platform: macosx_x86_64
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+      - name: Setup rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.target }}
+      - name: Setup build directory
+        run: mkdir builds
+      - name: Build
+        run: |
+          cargo build --release --target=${{ matrix.target }}
+      - name: Copy
+        run: |
+          cp target/${{ matrix.target }}/release/libviam_rust_utils.dylib builds/libviam_rust_utils-${{ matrix.platform }}.dylib
+          cp target/${{ matrix.target }}/release/libviam_rust_utils.a builds/libviam_rust_utils-${{ matrix.platform }}.a
+      - name: Correct install path
+        run: |
+          install_name_tool -id "@rpath/libviam_rust_utils.dylib" builds/libviam_rust_utils-${{ matrix.platform }}.dylib
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: builds
+          path: builds
+
+  build_linux:
+    if: github.repository_owner == 'viamrobotics'
+    needs: [prepare]
+    runs-on: ${{ matrix.runs-on }}
+    container:
+      image: ${{ matrix.image }}
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - target: aarch64-unknown-linux-gnu
+            platform: linux_aarch64
+            image: ubuntu:20.04
+            runs-on: buildjet-8vcpu-ubuntu-2204-arm
+          - target: x86_64-unknown-linux-gnu
+            platform: linux_x86_64
+            image: ghcr.io/cross-rs/x86_64-unknown-linux-gnu:main-centos
+            runs-on: buildjet-4vcpu-ubuntu-2204
+          - target: x86_64-unknown-linux-musl
+            platform: musllinux_x86_64
+            image: alpine
+            runs-on: buildjet-4vcpu-ubuntu-2204
+          - target: aarch64-unknown-linux-musl
+            platform: musllinux_aarch64
+            image: ghcr.io/cross-rs/aarch64-unknown-linux-musl:main
+            runs-on: buildjet-4vcpu-ubuntu-2204
+          - target: arm-unknown-linux-gnueabihf
+            platform: linux_armv6l
+            image: ghcr.io/cross-rs/arm-unknown-linux-gnueabihf:main
+            runs-on: buildjet-4vcpu-ubuntu-2204
+          - target: arm-unknown-linux-musleabihf
+            platform: musllinux_armv6l
+            image: ghcr.io/cross-rs/arm-unknown-linux-musleabihf:main
+            runs-on: buildjet-4vcpu-ubuntu-2204
+          - target: armv7-unknown-linux-musleabihf
+            platform: musllinux_armv7l
+            image: ghcr.io/cross-rs/armv7-unknown-linux-musleabihf:main
+            runs-on: buildjet-4vcpu-ubuntu-2204
+          - target: i686-unknown-linux-musl
+            platform: musllinux_x86
+            image: ghcr.io/cross-rs/i686-unknown-linux-musl:main
+            runs-on: buildjet-4vcpu-ubuntu-2204
+    steps:
+      - name: Setup dependencies
+        if: ${{ startsWith(matrix.image, 'ubuntu') }}
+        shell: bash
+        run: |  # (njooma) These are the deps that cross uses. I haven't tried pruning/optimizing
+          apt-get update && apt-get upgrade -y
+          apt-get install -y autoconf \
+            automake \
+            binutils \
+            ca-certificates \
+            curl \
+            file \
+            gcc \
+            git \
+            libtool \
+            m4 \
+            make
+      - name: Setup alpine dependencies
+        if: ${{ startsWith(matrix.image, 'alpine') }}
+        shell: sh
+        run: |
+          apk add libgcc \
+            curl \
+            build-base \
+            bash
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+      - name: Setup rust toolchain
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source "$HOME/.cargo/env"
+          rustup target add ${{ matrix.target }}
+      - name: Setup build directory
+        run: mkdir builds
+      - name: Build
+        shell: bash
+        run: |
+          source "$HOME/.cargo/env"
+          cargo build --release --locked --target=${{ matrix.target }}
+      - name: Copy
+        run: |
+          cp target/${{ matrix.target }}/release/libviam_rust_utils.so builds/libviam_rust_utils-${{ matrix.platform }}.so
+          cp target/${{ matrix.target }}/release/libviam_rust_utils.a builds/libviam_rust_utils-${{ matrix.platform }}.a
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: builds
+          path: builds
+
+  release:
+    needs: [prepare, build_macos, build_linux]
+    if: github.repository_owner == 'viamrobotics'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.prepare.outputs.version }}
+          files: builds/*
+          draft: true
+          prerelease: false
+          fail_on_unmatched_files: true

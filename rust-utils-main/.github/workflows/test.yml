@@ -1,0 +1,30 @@
+name: Run tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    if: github.repository_owner == 'viamrobotics'
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    container:
+      # Use rdk-devenv for now which has a go version >= 1.20 in order to run
+      # tests with goutils which requires at least 1.20.
+      image: ghcr.io/viamrobotics/rdk-devenv:amd64-cache
+    steps:
+      - name: Checkout PR/Push/Workflow Dispatch
+        uses: actions/checkout@v4
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - name: Run tests
+        run: |
+          apt-get -y install lsof
+          make test
