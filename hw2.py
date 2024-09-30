@@ -19,6 +19,19 @@ async def connect():
     )
     return await RobotClient.at_address('rover6-main.9883cqmu1w.viam.cloud', opts)
 
+def findRange (detections):
+    highestConfidence = None
+    if detections:
+        highestConfidence = detections[0]
+    for detection in detections:
+        if detection["confidence"]>highestConfidence["confidence"]:
+            highestConfidence = detection
+    return detection
+
+def leftOrRight(detection, midpoint):
+    if detection:
+        
+
 async def main():
     machine = await connect()
 
