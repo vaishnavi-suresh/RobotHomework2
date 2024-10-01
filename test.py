@@ -24,11 +24,10 @@ async def connect():
 async def main():
     #following straight from tutorial, edit
     machine = await connect()
-    camera_name = "<camera-name>"
+    camera_name = "cam"
     camera = Camera.from_robot(machine, camera_name)
     frame = await camera.get_image(mime_type="image/jpeg")
     base = Base.from_robot(machine, "viam_base")
-    camera_name = "<camera-name>"
     camera = Camera.from_robot(machine, camera_name)
     frame = await camera.get_image(mime_type="image/jpeg")
     pil_frame = viam_to_pil_image(frame)
