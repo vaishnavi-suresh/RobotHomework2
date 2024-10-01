@@ -9,6 +9,7 @@ from viam.components.camera import Camera
 from viam.components.encoder import Encoder
 from viam.components.movement_sensor import MovementSensor
 from viam.services.vision import VisionClient
+from viam.media.utils.pil import pil_to_viam_image, viam_to_pil_image
 import threading
 import time
 
