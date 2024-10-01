@@ -9,6 +9,8 @@ from viam.components.camera import Camera
 from viam.components.encoder import Encoder
 from viam.components.movement_sensor import MovementSensor
 from viam.services.vision import VisionClient
+import threading
+import time
 
 async def connect():
     opts = RobotClient.Options.with_api_key(
@@ -18,6 +20,20 @@ async def connect():
         api_key_id='<API-KEY-ID>'
     )
     return await RobotClient.at_address('rover6-main.9883cqmu1w.viam.cloud', opts)
+
+def getDetections(colorDetector,cam,vel):
+    detections = await colorDetectorget_detections_from_camera(cam)
+    if not detections:
+        for i in range(36):
+            base.spin(10,vel)
+            detections = await colorDetectorget_detections_from_camera(cam)
+            if detections:
+                break
+    if detections:
+        return detections
+    else:
+        return None
+
 
 def findRange (detections):
     adequateConfidence = []
@@ -54,13 +70,40 @@ def detectDistance(detection, dist, vel):
         while xspan<xspanMax:
             base.move_straight(dist,vel)
 
+def motion(detection, dist, vel, mp):
+    while True:
+        diff = leftOrRight(detection, mp)
+        base.spin(diff, vel)
+        detectDistance(detection, dist,vel)
+
 
 async def main():
+    #following straight from tutorial, edit
     machine = await connect()
     base = Base.from_robot(machine, "my_base")
     camera_name = "<camera-name>"
     camera = Camera.from_robot(machine, camera_name)
     frame = await camera.get_image(mime_type="image/jpeg")
+    base = Base.from_robot(machine, "my_base")
+    camera_name = "<camera-name>"
+    camera = Camera.from_robot(machine, camera_name)
+    frame = await camera.get_image(mime_type="image/jpeg")
+    pil_frame = viam_to_pil_image(frame)
+    my_detector = VisionClient.from_robot(machine, "my_color_detector") #change name to match color detector
+
+
+    #find detections
+    #then find range
+    #save detection
+    #then use a daemon thread to find if it is left or right, rotate that much in that direction, find distance, move forward that much
+    #press enter to quit
+    detections = getDetections(my_detector,camera,0.8)
+    detection = findRange(detections)
+    threading.Thread(target=motion, daemon=True).start()
+    input("Press enter to quit")
+    
+
+    
 
     print('Resources:')
     print(machine.resource_names)
