@@ -57,6 +57,10 @@ def detectDistance(detection, dist, vel):
 
 async def main():
     machine = await connect()
+    base = Base.from_robot(machine, "my_base")
+    camera_name = "<camera-name>"
+    camera = Camera.from_robot(machine, camera_name)
+    frame = await camera.get_image(mime_type="image/jpeg")
 
     print('Resources:')
     print(machine.resource_names)
