@@ -12,6 +12,15 @@ from viam.services.vision import VisionClient
 import threading
 import time
 
+async def connect():
+    opts = RobotClient.Options.with_api_key(
+            # Replace "<API-KEY>" (including brackets) with your machine's api key 
+        api_key='<API-KEY>',
+        # Replace "<API-KEY-ID>" (including brackets) with your machine's api key id
+        api_key_id='<API-KEY-ID>'
+    )
+    return await RobotClient.at_address('rover6-main.9883cqmu1w.viam.cloud', opts)
+
 async def main():
     #following straight from tutorial, edit
     machine = await connect()
