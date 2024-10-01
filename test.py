@@ -32,7 +32,7 @@ async def main():
     camera = Camera.from_robot(machine, camera_name)
     frame = await camera.get_image(mime_type="image/jpeg")
     pil_frame = viam_to_pil_image(frame)
-    my_detector = VisionClient.from_robot(machine, "my_color_detector") #change name to match color detector
+    my_detector = VisionClient.from_robot(machine, "color_detector") #change name to match color detector
     
 
     print('Resources:')
