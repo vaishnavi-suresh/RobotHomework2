@@ -22,7 +22,7 @@ async def connect():
     )
     return await RobotClient.at_address('rover6-main.9883cqmu1w.viam.cloud', opts)
 
-def getDetections(colorDetector,cam,vel):
+async def getDetections(colorDetector,cam,vel):
     detections = await colorDetector.get_detections_from_camera(cam)
     if not detections:
         for i in range(36):
