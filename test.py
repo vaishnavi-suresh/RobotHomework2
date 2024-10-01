@@ -15,9 +15,9 @@ import time
 async def connect():
     opts = RobotClient.Options.with_api_key(
             # Replace "<API-KEY>" (including brackets) with your machine's api key 
-        api_key='<API-KEY>',
+        api_key='i11ph4btwvdp1kixh3oveex92tmvdtx2',
         # Replace "<API-KEY-ID>" (including brackets) with your machine's api key id
-        api_key_id='<API-KEY-ID>'
+        api_key_id='8b19e462-949d-4cf3-9f7a-5ce0854eb7b8'
     )
     return await RobotClient.at_address('rover6-main.9883cqmu1w.viam.cloud', opts)
 
