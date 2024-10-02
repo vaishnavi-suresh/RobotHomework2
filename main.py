@@ -57,7 +57,7 @@ async def detectDistance(detection, base, dist, vel):
     if xspan < xspanMin:
         print("object small")
         while xspan < xspanMax:
-            await base.move_straight(dist, vel)
+            base.move_straight(dist, vel)
             # You might want to update the detection here to get the new xspan
 
 async def motion(detection, base, dist, vel, mp):
