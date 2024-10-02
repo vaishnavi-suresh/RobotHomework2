@@ -87,8 +87,7 @@ async def motion(pf,myDetector,myCam, base, dist,spinnum, vel, mp):
             await base.spin(spinnum,vel)
             await base.move_straight(dist,vel)
         await asyncio.sleep(0.1) 
-        if detectDistance(pf,detection)==1:
-            break
+        
 
 
 
