@@ -24,6 +24,7 @@ async def getDetections(colorDetector, cam, base, vel):
     detections = await colorDetector.get_detections_from_camera(cam)
     if not detections:
         for i in range(5):
+            print("no detection found")
             await base.spin(72, vel)
             print ("spin in progress")
             detections = await colorDetector.get_detections_from_camera(cam)
@@ -32,10 +33,7 @@ async def getDetections(colorDetector, cam, base, vel):
     return detections if detections else None
 
 def findRange(detections):
-    adequateConfidence = [d for d in detections if d.confidence > 0.9]
-    if not adequateConfidence:
-        return None
-    bestDetection = max(adequateConfidence, key=lambda d: (d.x_max - d.x_min) * (d.y_max - d.y_min))
+    bestDetection = max(detections, key=lambda d: (d.x_max - d.x_min) * (d.y_max - d.y_min))
     
     return bestDetection
 
@@ -104,7 +102,7 @@ async def main():
     pil_frame = viam_to_pil_image(frame)
 
 
-    detections = await getDetections(my_detector, camera_name, base, 1)
+    detections = await getDetections(my_detector, camera_name, base, 10)
     detection = findRange(detections)
 
     if detection:
