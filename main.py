@@ -65,8 +65,9 @@ async def motion(detection, base, dist, vel, mp):
     while True:
         diff = leftOrRight(detection, mp)
         print("motion loop running")
+
         if diff is not None:
-            await base.spin(diff, vel)
+            base.spin(diff, vel)
             print ("success")
             time.sleep(1)
         await detectDistance(detection, base, dist, vel)
