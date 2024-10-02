@@ -85,8 +85,9 @@ async def motion(pf,detection, base, dist,spinnum, vel, mp):
         else:
             await base.spin(spinnum,vel)
             await base.move_straight(dist,vel)
-        await asyncio.sleep(0.1) 
         cont = detectDistance(pf,detection)
+        await asyncio.sleep(0.1) 
+
 
 
 async def main():
