@@ -40,7 +40,7 @@ def findRange(detections):
 async def leftOrRight(detection, midpoint):
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
-        print(f"{detectionMP} {midpoint}")
+        print(f"{detectionMP} {midpoint}") 
         difference = midpoint - detectionMP
         if difference == 0:
             return 0
