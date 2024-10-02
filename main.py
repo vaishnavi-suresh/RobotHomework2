@@ -62,6 +62,8 @@ async def motion(detection, base, dist, vel, mp):
         diff = leftOrRight(detection, mp)
         if diff is not None:
             await base.spin(diff, vel)
+            print ("success")
+            time.sleep(1)
         await detectDistance(detection, base, dist, vel)
         await asyncio.sleep(0.1)  # Add a small delay to prevent tight looping
 
