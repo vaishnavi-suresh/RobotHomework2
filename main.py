@@ -87,6 +87,8 @@ async def motion(pf,myDetector,myCam, base, dist,spinnum, vel, mp):
             await base.spin(spinnum,vel)
             await base.move_straight(dist,vel)
         await asyncio.sleep(0.1) 
+        if detectDistance(pf,detection)==1:
+            break
 
 
 
@@ -100,15 +102,11 @@ async def main():
     pil_frame = viam_to_pil_image(frame)
 
 
-    detections = await getDetections(my_detector, camera_name, base, 10)
-    detection = findRange(detections)
+    
+    asyncio.create_task(motion(pil_frame,my_detector,camera_name, base, 90,5, 500, pil_frame.size[0]))  # Adjust parameters as needed
+    print("Motion task started. Press Enter to quit.")
+    await asyncio.get_event_loop().run_in_executor(None, input, "")
 
-    if detection:
-        asyncio.create_task(motion(pil_frame,my_detector,camera_name, base, 90,5, 500, pil_frame.size[0]))  # Adjust parameters as needed
-        print("Motion task started. Press Enter to quit.")
-        await asyncio.get_event_loop().run_in_executor(None, input, "")
-    else:
-        print("No detections found.")
 
     await machine.close()
 
