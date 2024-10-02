@@ -39,7 +39,7 @@ def findRange(detections):
     
     return bestDetection
 
-async def leftOrRight(detection, cam, midpoint):
+async def leftOrRight(detection, midpoint):
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
         print(f"{detectionMP} {midpoint}")
@@ -82,7 +82,7 @@ async def detectDistance(detector,cam, base, dist, vel):
 """
 async def motion(detection, base, dist,spinnum, vel, mp):
     while True:
-        LorR = await leftOrRight(base, detection, mp)
+        LorR = await leftOrRight( detection, mp)
         print("motion loop running")
         if LorR ==0:
             await base.move_straight(dist,vel)
