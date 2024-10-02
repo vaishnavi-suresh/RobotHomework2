@@ -87,7 +87,7 @@ async def main():
     detection = findRange(detections)
 
     if detection:
-        asyncio.create_task(motion(detection, base, 10, 1, 0.5))  # Adjust parameters as needed
+        asyncio.create_task(motion(detection, base, 10, 1, 500))  # Adjust parameters as needed
         print("Motion task started. Press Enter to quit.")
         await asyncio.get_event_loop().run_in_executor(None, input, "")
     else:
