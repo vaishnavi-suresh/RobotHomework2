@@ -67,7 +67,7 @@ async def leftOrRight(detection, midpoint):
 
 async def detectDistance(pf, detection):
     xspan = detection.x_max - detection.x_min
-    if xspan == 0.8*pf.size[0]:
+    if xspan > 0.8*pf.size[0]:
         return 1
     return 0
     
