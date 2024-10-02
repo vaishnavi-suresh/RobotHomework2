@@ -39,7 +39,9 @@ def findRange(detections):
     
     return bestDetection
 
-async def leftOrRight(base, detection, midpoint):
+async def leftOrRight(base, detector, cam, midpoint):
+    detections = await getDetections(detector, cam, base, 1)
+    detection = findRange(detections)
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
         print(f"{detectionMP} {midpoint}")
@@ -58,7 +60,9 @@ async def leftOrRight(base, detection, midpoint):
         print("no detection available")
         return None
     
-async def detectDistance(detection, base, dist, vel):
+async def detectDistance(detector,cam, base, dist, vel):
+    detections = await getDetections(detector, cam, base, 1)
+    detection = findRange(detections)
     xspan = detection.x_max - detection.x_min
     print("running detect distance")
     xspanMin = 0.5 * xspan
@@ -69,9 +73,9 @@ async def detectDistance(detection, base, dist, vel):
             base.move_straight(dist, vel)
             # You might want to update the detection here to get the new xspan
 
-async def motion(detection, base, dist, vel, mp):
+async def motion(detector, cam, base, dist, vel, mp):
     while True:
-        diff = await leftOrRight(base, detection, mp)
+        diff = await leftOrRight(base, detector, cam, mp)
         print("motion loop running")
 
         if diff is not None:
@@ -79,7 +83,7 @@ async def motion(detection, base, dist, vel, mp):
             await base.spin(diff, vel)
             print ("success")
             time.sleep(1)
-        await detectDistance(detection, base, dist, vel)
+        await detectDistance(detector,cam, base, dist, vel)
         await asyncio.sleep(0.1)  # Add a small delay to prevent tight looping
 
 async def main():
@@ -96,7 +100,7 @@ async def main():
     detection = findRange(detections)
 
     if detection:
-        asyncio.create_task(motion(detection, base, 10, 1, pil_frame.size[0]))  # Adjust parameters as needed
+        asyncio.create_task(motion(my_detector, camera_name, base, 10, 1, pil_frame.size[0]))  # Adjust parameters as needed
         print("Motion task started. Press Enter to quit.")
         await asyncio.get_event_loop().run_in_executor(None, input, "")
     else:
