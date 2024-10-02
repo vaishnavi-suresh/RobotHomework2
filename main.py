@@ -52,6 +52,7 @@ def leftOrRight(detection, midpoint):
     
 async def detectDistance(detection, base, dist, vel):
     xspan = detection.x_max - detection.x_min
+    print("running detect distance")
     xspanMin = 0.5 * xspan
     xspanMax = xspan
     if xspan < xspanMin:
