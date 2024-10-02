@@ -92,7 +92,7 @@ async def motion(detection, base, dist,spinnum, vel, mp):
         else:
             await base.spin(spinnum,vel)
             await base.move_straight(dist,vel)
-        await asyncio.sleep(1) 
+        await asyncio.sleep(0.1) 
 
 async def main():
     machine = await connect()
@@ -108,7 +108,7 @@ async def main():
     detection = findRange(detections)
 
     if detection:
-        asyncio.create_task(motion(detection, base, 10,10, 10, pil_frame.size[0]))  # Adjust parameters as needed
+        asyncio.create_task(motion(detection, base, 300,10, 500, pil_frame.size[0]))  # Adjust parameters as needed
         print("Motion task started. Press Enter to quit.")
         await asyncio.get_event_loop().run_in_executor(None, input, "")
     else:
