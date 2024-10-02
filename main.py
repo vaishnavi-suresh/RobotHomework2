@@ -23,8 +23,9 @@ async def connect():
 async def getDetections(colorDetector, cam, base, vel):
     detections = await colorDetector.get_detections_from_camera(cam)
     if not detections:
-        for i in range(36):
-            await base.spin(10, vel)
+        for i in range(5):
+            await base.spin(72, vel)
+            print ("spin in progress")
             detections = await colorDetector.get_detections_from_camera(cam)
             if detections:
                 break
