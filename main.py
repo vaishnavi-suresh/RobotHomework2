@@ -55,6 +55,7 @@ async def detectDistance(detection, base, dist, vel):
     xspanMin = 0.5 * xspan
     xspanMax = xspan
     if xspan < xspanMin:
+        print("object small")
         while xspan < xspanMax:
             await base.move_straight(dist, vel)
             # You might want to update the detection here to get the new xspan
@@ -62,6 +63,7 @@ async def detectDistance(detection, base, dist, vel):
 async def motion(detection, base, dist, vel, mp):
     while True:
         diff = leftOrRight(detection, mp)
+        print("motion loop running")
         if diff is not None:
             await base.spin(diff, vel)
             print ("success")
@@ -76,7 +78,7 @@ async def main():
     base = Base.from_robot(machine, "viam_base")
     my_detector = VisionClient.from_robot(machine, "color_detector")
 
-    detections = await getDetections(my_detector, camera_name, base, 0.8)
+    detections = await getDetections(my_detector, camera_name, base, 1)
     detection = findRange(detections)
 
     if detection:
