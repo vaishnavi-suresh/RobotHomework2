@@ -27,7 +27,7 @@ def leftOrRight(detection, image_width):
     normalized_diff = difference / image_width
     return normalized_diff
 
-async def search_for_object(base, vision_service, camera_name, spin_speed): //increments rotationally horizontally
+async def search_for_object(base, vision_service, camera_name, spin_speed): #increments rotationally horizontally
     print("Object not detected. Initiating search.")
     rotation_increment = 45  # Degrees turned each rotation 
     total_rotation = 0
@@ -47,7 +47,7 @@ async def search_for_object(base, vision_service, camera_name, spin_speed): //in
         print("Object not found after full rotation.")
     return detections
 
-async def track_object(base, detection, image_width, forward_speed): //uses leftOrRight fn
+async def track_object(base, detection, image_width, forward_speed): #uses leftOrRight fn
     normalized_diff = leftOrRight(detection, image_width)
     threshold = 0.05 
     print(f"Normalized difference: {normalized_diff}")
