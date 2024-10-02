@@ -49,18 +49,6 @@ async def leftOrRight(detection, midpoint):
         if difference>midpoint+midpoint/6:
             return -1
         
-            while abs(difference)>midpoint/6:
-                if detectionMP>midpoint:
-                    await base.spin(-10,5)
-                else:
-                    await base.spin(10,5)
-                detections = await getDetections(detector, cam, base, 1)
-                detection = findRange(detections)
-                detectionMP = (detection.x_min + detection.x_max) / 2
-                print(detectionMP)
-                difference = midpoint-detectionMP
-        print("detection found")
-        return difference
     else:
         print("no detection available")
         return None
