@@ -82,6 +82,7 @@ async def main():
     camera = Camera.from_robot(machine, camera_name)
     base = Base.from_robot(machine, "viam_base")
     my_detector = VisionClient.from_robot(machine, "color_detector")
+    frame = await camera.get_image(mime_type="image/jpeg")
     pil_frame = viam_to_pil_image(frame)
 
 
