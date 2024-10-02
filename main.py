@@ -39,16 +39,18 @@ def findRange(detections):
     
     return bestDetection
 
-async def leftOrRight(base, detector, cam, midpoint):
-    detections = await getDetections(detector, cam, base, 1)
-    detection = findRange(detections)
+async def leftOrRight(detection, cam, midpoint):
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
         print(f"{detectionMP} {midpoint}")
         difference = midpoint - detectionMP
         if difference == 0:
-            return None
+            return 0
+        elif difference <midpoint/6:
+            return -1
         else:
+            return 1
+        
             while abs(difference)>midpoint/6:
                 if detectionMP>midpoint:
                     await base.spin(-10,5)
@@ -64,7 +66,7 @@ async def leftOrRight(base, detector, cam, midpoint):
     else:
         print("no detection available")
         return None
-    
+"""  
 async def detectDistance(detector,cam, base, dist, vel):
     detections = await getDetections(detector, cam, base, 1)
     detection = findRange(detections)
@@ -77,19 +79,20 @@ async def detectDistance(detector,cam, base, dist, vel):
         while xspan < xspanMax:
             base.move_straight(dist, vel)
             # You might want to update the detection here to get the new xspan
-
-async def motion(detector, cam, base, dist, vel, mp):
+"""
+async def motion(detection, base, dist,spinnum, vel, mp):
     while True:
-        diff = await leftOrRight(base, detector, cam, mp)
+        LorR = await leftOrRight(base, detection, mp)
         print("motion loop running")
-
-        if diff is not None:
-            print(diff)
-            await base.spin(diff, vel)
-            print ("success")
-            time.sleep(1)
-        await detectDistance(detector,cam, base, dist, vel)
-        await asyncio.sleep(0.1)  # Add a small delay to prevent tight looping
+        if LorR ==0:
+            await base.move_straight(dist,vel)
+        elif LorR <0:
+            await base.spin(-spinnum,vel)
+            await base.move_straight(dist,vel)
+        else:
+            await base.spin(spinnum,vel)
+            await base.move_straight(dist,vel)
+        await asyncio.sleep(1) 
 
 async def main():
     machine = await connect()
@@ -105,7 +108,7 @@ async def main():
     detection = findRange(detections)
 
     if detection:
-        asyncio.create_task(motion(my_detector, camera_name, base, 10, 1, pil_frame.size[0]))  # Adjust parameters as needed
+        asyncio.create_task(motion(detection, base, 10,10, 10, pil_frame.size[0]))  # Adjust parameters as needed
         print("Motion task started. Press Enter to quit.")
         await asyncio.get_event_loop().run_in_executor(None, input, "")
     else:
