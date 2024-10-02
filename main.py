@@ -105,6 +105,11 @@ async def main():
     asyncio.create_task(motion(pil_frame,my_detector,camera_name, base, 90,5, 500, pil_frame.size[0]))  # Adjust parameters as needed
     print("Motion task started. Press Enter to quit.")
     await asyncio.get_event_loop().run_in_executor(None, input, "")
+    detections = await getDetections(myDetector, myCam, base, 10)
+    detection = findRange(detections)
+    status = detectDistance(pil_frame,detection)
+    if status ==1:
+        asyncio.get_event_loop().stop()
 
 
     await machine.close()
