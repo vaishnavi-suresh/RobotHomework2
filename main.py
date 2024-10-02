@@ -36,11 +36,13 @@ def findRange(detections):
     if not adequateConfidence:
         return None
     bestDetection = max(adequateConfidence, key=lambda d: (d.x_max - d.x_min) * (d.y_max - d.y_min))
+    
     return bestDetection
 
 def leftOrRight(detection, midpoint):
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
+        print(f"{detectionMP} {midpoint}")
         difference = midpoint - detectionMP
         if difference == 0:
             return None
