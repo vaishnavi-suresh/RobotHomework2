@@ -44,9 +44,9 @@ async def leftOrRight(detection, midpoint):
         difference = midpoint - detectionMP
         if difference == 0:
             return 0
-        elif difference <0:
+        elif difference <midpoint/4:
             return -1
-        else:
+        elif difference>midpoint/4:
             return 1
         
             while abs(difference)>midpoint/6:
