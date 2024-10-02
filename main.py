@@ -64,23 +64,18 @@ async def leftOrRight(detection, midpoint):
     else:
         print("no detection available")
         return None
-"""  
-async def detectDistance(detector,cam, base, dist, vel):
-    detections = await getDetections(detector, cam, base, 1)
-    detection = findRange(detections)
+
+async def detectDistance(pf, detection):
     xspan = detection.x_max - detection.x_min
-    print("running detect distance")
-    xspanMin = 0.5 * xspan
-    xspanMax = xspan
-    if xspan < xspanMin:
-        print("object small")
-        while xspan < xspanMax:
-            base.move_straight(dist, vel)
-            # You might want to update the detection here to get the new xspan
-"""
-async def motion(detection, base, dist,spinnum, vel, mp):
-    while True:
-        LorR = await leftOrRight( detection, mp)
+    if xspan == 0.8*pf.size[0]:
+        return 1
+    return 0
+    
+
+async def motion(pf,detection, base, dist,spinnum, vel, mp):
+    cont = 0
+    while cont ==0:
+        LorR = await leftOrRight(detection, mp)
         print("motion loop running")
         if LorR ==0:
             await base.move_straight(dist,vel)
@@ -91,6 +86,8 @@ async def motion(detection, base, dist,spinnum, vel, mp):
             await base.spin(spinnum,vel)
             await base.move_straight(dist,vel)
         await asyncio.sleep(0.1) 
+        cont = detectDistance(pf,detection)
+
 
 async def main():
     machine = await connect()
@@ -106,7 +103,7 @@ async def main():
     detection = findRange(detections)
 
     if detection:
-        asyncio.create_task(motion(detection, base, 300,10, 500, pil_frame.size[0]))  # Adjust parameters as needed
+        asyncio.create_task(motion(pil_frame,detection, base, 300,10, 500, pil_frame.size[0]))  # Adjust parameters as needed
         print("Motion task started. Press Enter to quit.")
         await asyncio.get_event_loop().run_in_executor(None, input, "")
     else:
