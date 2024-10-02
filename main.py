@@ -42,6 +42,7 @@ def leftOrRight(detection, midpoint):
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
         difference = midpoint - detectionMP
+        print("detection found")
         return difference
     else:
         print("no detection available")
