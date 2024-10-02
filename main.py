@@ -72,8 +72,10 @@ async def detectDistance(pf, detection):
     return 0
     
 
-async def motion(pf,detection, base, dist,spinnum, vel, mp):
+async def motion(pf,myDetector,myCam, base, dist,spinnum, vel, mp):
     while True:
+        detections = await getDetections(myDetector, myCam, base, 10)
+        detection = findRange(detections)
         LorR = await leftOrRight(detection, mp)
         print("motion loop running")
         if LorR ==0:
@@ -102,7 +104,7 @@ async def main():
     detection = findRange(detections)
 
     if detection:
-        asyncio.create_task(motion(pil_frame,detection, base, 300,10, 500, pil_frame.size[0]))  # Adjust parameters as needed
+        asyncio.create_task(motion(pil_frame,my_detector,camera_name, base, 300,10, 500, pil_frame.size[0]))  # Adjust parameters as needed
         print("Motion task started. Press Enter to quit.")
         await asyncio.get_event_loop().run_in_executor(None, input, "")
     else:
