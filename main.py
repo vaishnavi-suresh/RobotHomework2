@@ -32,7 +32,7 @@ async def getDetections(colorDetector, cam, base, vel):
     return detections if detections else None
 
 def findRange(detections):
-    adequateConfidence = [d for d in detections if d.confidence > 0.5]
+    adequateConfidence = [d for d in detections if d.confidence > 0.9]
     if not adequateConfidence:
         return None
     bestDetection = max(adequateConfidence, key=lambda d: (d.x_max - d.x_min) * (d.y_max - d.y_min))
