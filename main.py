@@ -73,8 +73,7 @@ async def detectDistance(pf, detection):
     
 
 async def motion(pf,detection, base, dist,spinnum, vel, mp):
-    cont = 0
-    while cont ==0:
+    while True:
         LorR = await leftOrRight(detection, mp)
         print("motion loop running")
         if LorR ==0:
@@ -85,7 +84,6 @@ async def motion(pf,detection, base, dist,spinnum, vel, mp):
         else:
             await base.spin(spinnum,vel)
             await base.move_straight(dist,vel)
-        cont = detectDistance(pf,detection)
         await asyncio.sleep(0.1) 
 
 
