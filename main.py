@@ -24,9 +24,7 @@ async def getDetections(colorDetector, cam, base, vel):
     detections = await colorDetector.get_detections_from_camera(cam)
     if not detections:
         for i in range(20):
-            print("no detection found")
             await base.spin(18, vel)
-            print ("spin in progress")
             detections = await colorDetector.get_detections_from_camera(cam)
             if detections:
                 break
@@ -49,11 +47,12 @@ async def leftOrRight(detection, midpoint):
             return -1
         
     else:
-        print("no detection available")
         return None
 
 async def detectDistance(pf, detection):
     xspan = detection.x_max - detection.x_min
+    print (xspan)
+    print(pf.size[0])
     if xspan > 0.8*pf.size[0]:
         return 1
     return 0
@@ -64,7 +63,6 @@ async def motion(pf,myDetector,myCam, base, dist,spinnum, vel, mp):
         detections = await getDetections(myDetector, myCam, base, 10)
         detection = findRange(detections)
         LorR = await leftOrRight(detection, mp)
-        print("motion loop running")
         if LorR ==0:
             await base.move_straight(dist,vel)
         elif LorR ==-1:
