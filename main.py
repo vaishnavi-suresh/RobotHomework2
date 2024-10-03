@@ -42,11 +42,11 @@ async def leftOrRight(detection, midpoint):
         detectionMP = (detection.x_min + detection.x_max) / 2
         print(f"{detectionMP} {midpoint}") 
         difference = midpoint - detectionMP
-        if difference == 0:
+        if detectionMP == midpoint:
             return 0
-        if difference <midpoint-midpoint/6:
+        if detectionMP <midpoint-midpoint/6:
             return 1
-        if difference>midpoint+midpoint/6:
+        if detectionMP>midpoint+midpoint/6:
             return -1
         
     else:
@@ -68,12 +68,13 @@ async def motion(pf,myDetector,myCam, base, dist,spinnum, vel, mp):
         print("motion loop running")
         if LorR ==0:
             await base.move_straight(dist,vel)
-        elif LorR <0:
+        elif LorR ==-1:
             await base.spin(-spinnum,vel)
             await base.move_straight(dist,vel)
-        else:
+        elif LorR ==1:
             await base.spin(spinnum,vel)
             await base.move_straight(dist,vel)
+        
         await asyncio.sleep(0.1) 
         
 
