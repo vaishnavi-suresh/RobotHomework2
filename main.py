@@ -39,11 +39,11 @@ async def leftOrRight(detection, midpoint):
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
         print(f"{detectionMP} {midpoint}") 
-        if detectionMP == midpoint:
+        if midpoint - midpoint/6 < detectionMP<midpoint+midpoint/6:
             return 0
-        if detectionMP <midpoint:
+        if detectionMP <midpoint-midpoint/6:
             return 1
-        if detectionMP>midpoint:
+        if detectionMP>midpoint+midpoint/6:
             return -1
         
     else:
