@@ -23,7 +23,7 @@ async def connect():
 async def getDetections(colorDetector, cam, base, vel):
     detections = await colorDetector.get_detections_from_camera(cam)
     if not detections:
-        for i in range(20):
+        for i in range(40):
             await base.spin(18, vel)
             detections = await colorDetector.get_detections_from_camera(cam)
             await asyncio.sleep(2) # added delay for camera
