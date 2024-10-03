@@ -26,6 +26,7 @@ async def getDetections(colorDetector, cam, base, vel):
         for i in range(20):
             await base.spin(18, vel)
             detections = await colorDetector.get_detections_from_camera(cam)
+            await asyncio.sleep(2) # added delay for camera
             if detections:
                 break
     return detections if detections else None
@@ -33,7 +34,7 @@ async def getDetections(colorDetector, cam, base, vel):
 def findRange(detections):
     bestDetection = max(detections, key=lambda d: (d.x_max - d.x_min) * (d.y_max - d.y_min))
     
-    return bestDetection
+    return bestDetection # largest matching color is the target object
 
 async def leftOrRight(detection, midpoint):
     if detection:
