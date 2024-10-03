@@ -73,7 +73,7 @@ async def motion(pf,myDetector,myCam, base, dist,spinnum, vel, mp):
             await base.move_straight(dist,vel)
         
         await asyncio.sleep(0.1) 
-        status = await detectDistance(pil_frame,detection)
+        status = await detectDistance(pf,detection)
         if status ==1:
             asyncio.get_event_loop().stop()
             break
