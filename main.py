@@ -41,7 +41,6 @@ async def leftOrRight(detection, midpoint):
     if detection:
         detectionMP = (detection.x_min + detection.x_max) / 2
         print(f"{detectionMP} {midpoint}") 
-        difference = midpoint - detectionMP
         if detectionMP == midpoint:
             return 0
         if detectionMP <midpoint-midpoint/6:
@@ -96,7 +95,7 @@ async def main():
     await asyncio.get_event_loop().run_in_executor(None, input, "")
     detections = await getDetections(myDetector, myCam, base, 10)
     detection = findRange(detections)
-    status = detectDistance(pil_frame,detection)
+    status = await detectDistance(pil_frame,detection)
     if status ==1:
         asyncio.get_event_loop().stop()
 
